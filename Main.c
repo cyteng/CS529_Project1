@@ -215,7 +215,7 @@ int main()
 	// test Matrix2DRotRad
 	// ====================
 
-	int frequency, t1, t2;
+	LARGE_INTEGER  frequency, t1, t2;
 	double elapsedTime;
 
 	QueryPerformanceFrequency(&frequency);
@@ -229,7 +229,7 @@ int main()
 		Matrix2DConcat(&m0, &m1, &m0);
 
 	QueryPerformanceCounter(&t2);
-	elapsedTime = (t2 - t1) * 1000.0 / frequency;
+	elapsedTime = (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart;
 
 	printf("Matrix2DRotRad   : %s (%d)\n", (CompareMatrix2D(&id, &m0) < EPSILON) ? "Pass" : "Fail", n);
 
