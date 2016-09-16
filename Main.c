@@ -10,6 +10,7 @@
 #define EPSILON 0.0001f
 #define PI      3.1415926535897932384626433832795
 
+
 //
 void PrintVector(char *txt, Vector2D *pVec0)
 {
@@ -215,21 +216,12 @@ int main()
 	// test Matrix2DRotRad
 	// ====================
 
-	LARGE_INTEGER  frequency, t1, t2;
-	double elapsedTime;
-
-	QueryPerformanceFrequency(&frequency);
-	QueryPerformanceCounter(&t1);
-
-	n = 5;
+	n = (rand() % 16) + 15;
 	Matrix2DIdentity(&m0);
 	Matrix2DRotRad  (&m1, 2.0f * PI / n);
 
-	for (i = 0; i < n; i++)
+	for (i = 0; i < n; i++) 
 		Matrix2DConcat(&m0, &m1, &m0);
-
-	QueryPerformanceCounter(&t2);
-	elapsedTime = (t2.QuadPart - t1.QuadPart) * 1000.0 / frequency.QuadPart;
 
 	printf("Matrix2DRotRad   : %s (%d)\n", (CompareMatrix2D(&id, &m0) < EPSILON) ? "Pass" : "Fail", n);
 
