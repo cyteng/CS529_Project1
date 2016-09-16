@@ -10,7 +10,6 @@
 #define EPSILON 0.0001f
 #define PI      3.1415926535897932384626433832795
 
-
 //
 void PrintVector(char *txt, Vector2D *pVec0)
 {
@@ -124,6 +123,12 @@ int main()
 	v2.x = 4.0f;	v2.y = -6.0f;
 	printf("Vector2DDotProduct: %s\n", (fabs(Vector2DDotProduct(&v1, &v2)) < EPSILON) ? "Pass" : "Fail");
 
+	float deg = 360.0f / ((rand() % 16) + 15);
+	v2.x = 1.0f;	v2.y = 0.0f;
+	Vector2DFromAngleDeg(&v1, deg);
+	Matrix2DRotDeg(&m0, deg);
+	Matrix2DMultVec(&v2, &m0, &v2);
+	printf("Vector2DFromAngleDeg: %s\n", (CompareVector2D(&v1, &v2) < EPSILON) ? "Pass" : "Fail");
 
 	printf("\n------Testing StaticPointToStaticCircle------\n\n");
 	v1.x = 10.f; v1.y = 10.f;
