@@ -1,6 +1,23 @@
+/*-------------------------------------------------------
+Copyright (C) 2016 DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior
+written consent of DigiPen Institute of Technology is prohibited.
+File Name: Matrix2D.h
+Purpose: Simple 2D matrix functions declaration
+Language: C/C++ with Microsoft (R) C/C++ Optimizing Compiler 2015
+Platform:
+	-Compiler Version: 19.00.24210 for x64
+	-OS: Windows 7
+Project: CS529_chiyenteng_1
+Author:
+	-Name: Chi-Yen Teng
+	-Login: chiyen.teng
+	-ID: 60000416
+Creation date: 09/14/16
+--------------------------------------------------------*/
+
 #ifndef MATRIX2D_H
 #define MATRIX2D_H
-
 
 #include "Vector2D.h"
 
