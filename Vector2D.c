@@ -47,16 +47,16 @@ void Vector2DNeg(Vector2D *pResult, Vector2D *pVec0) {
 // ---------------------------------------------------------------------------
 
 void Vector2DAdd(Vector2D *pResult, Vector2D *pVec0, Vector2D *pVec1) {
-	int sumX = (*pVec0).x + (*pVec1).x;
-	int sumY = (*pVec0).y + (*pVec1).y;
+	float sumX = (*pVec0).x + (*pVec1).x;
+	float sumY = (*pVec0).y + (*pVec1).y;
 	Vector2DSet(pResult, sumX, sumY);
 }
 
 // ---------------------------------------------------------------------------
 
 void Vector2DSub(Vector2D *pResult, Vector2D *pVec0, Vector2D *pVec1) {
-	int diffX = (*pVec0).x - (*pVec1).x;
-	int diffY = (*pVec0).y - (*pVec1).y;
+	float diffX = (*pVec0).x - (*pVec1).x;
+	float diffY = (*pVec0).y - (*pVec1).y;
 	Vector2DSet(pResult, diffX, diffY);
 }
 
@@ -64,7 +64,13 @@ void Vector2DSub(Vector2D *pResult, Vector2D *pVec0, Vector2D *pVec1) {
 
 void Vector2DNormalize(Vector2D *pResult, Vector2D *pVec0) {
 	float length = Vector2DLength(pVec0);
-	Vector2DSet(pResult, (*pVec0).x / length, (*pVec0).y / length);	
+	//handle length == 0
+	if (fabs(length) < EPSILON) {
+		Vector2DSet(pResult, 0.f, 0.f);
+	}
+	else {
+		Vector2DSet(pResult, (*pVec0).x / length, (*pVec0).y / length);
+	}	
 }
 
 // ---------------------------------------------------------------------------
@@ -105,15 +111,14 @@ float Vector2DSquareLength(Vector2D *pVec0) {
 // ---------------------------------------------------------------------------
 
 float Vector2DDistance(Vector2D *pVec0, Vector2D *pVec1) {
-
 	return sqrt(Vector2DSquareDistance(pVec0, pVec1));
 }
 
 // ---------------------------------------------------------------------------
 
 float Vector2DSquareDistance(Vector2D *pVec0, Vector2D *pVec1) {	
-	int diffX = (*pVec0).x - (*pVec1).x;
-	int diffY = (*pVec0).y - (*pVec1).y;
+	float diffX = (*pVec0).x - (*pVec1).x;
+	float diffY = (*pVec0).y - (*pVec1).y;
 
 	return diffX * diffX + diffY * diffY;
 }

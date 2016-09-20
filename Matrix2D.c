@@ -23,22 +23,20 @@ Creation date: 09/14/16
 #define USE_SIMD
 
 #ifdef USE_SIMD
+	#define SHUFFLE_PARAM(x, y, z, w) \
+	((x) | ((y) << 2) | ((z) << 4) | ((w) << 6))
 
-#define SHUFFLE_PARAM(x, y, z, w) \
-((x) | ((y) << 2) | ((z) << 4) | ((w) << 6))
+	#define _mm_replicate_z_ps(v) \
+	_mm_shuffle_ps((v), (v), SHUFFLE_PARAM(2, 2, 2, 2))
 
-#define _mm_replicate_z_ps(v) \
-_mm_shuffle_ps((v), (v), SHUFFLE_PARAM(2, 2, 2, 2))
+	#define _mm_replicate_y_ps(v) \
+	_mm_shuffle_ps((v), (v), SHUFFLE_PARAM(1, 1, 1, 1))
 
-#define _mm_replicate_y_ps(v) \
-_mm_shuffle_ps((v), (v), SHUFFLE_PARAM(1, 1, 1, 1))
+	#define _mm_replicate_x_ps(v) \
+	_mm_shuffle_ps((v), (v), SHUFFLE_PARAM(0, 0, 0, 0))
 
-#define _mm_replicate_x_ps(v) \
-_mm_shuffle_ps((v), (v), SHUFFLE_PARAM(0, 0, 0, 0))
-
-#define _mm_madd_ps(a, b, c) \
-_mm_add_ps(_mm_mul_ps((a), (b)), (c))
-
+	#define _mm_madd_ps(a, b, c) \
+	_mm_add_ps(_mm_mul_ps((a), (b)), (c))
 #endif
 
 inline float degToRad(float const degree) {
@@ -51,10 +49,7 @@ This function sets the matrix Result to the identity matrix
 void Matrix2DIdentity(Matrix2D *pResult) {
 	for(int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			(*pResult).m[i][j] = 0.0f;
-			if (i == j) {
-				(*pResult).m[i][j] = 1.0f;
-			}
+			(*pResult).m[i][j] = (i == j)? 1.0f : 0.0f;
 		}
 	}
 }
