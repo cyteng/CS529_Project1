@@ -17,7 +17,6 @@ Creation date: 09/14/16
 --------------------------------------------------------*/
 
 #include "Math2D.h"
-#include "stdio.h"
 
 /*
 This function checks if the point P is colliding with the circle whose

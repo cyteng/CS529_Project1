@@ -82,15 +82,17 @@ void Vector2DScale(Vector2D *pResult, Vector2D *pVec0, float c) {
 // ---------------------------------------------------------------------------
 
 void Vector2DScaleAdd(Vector2D *pResult, Vector2D *pVec0, Vector2D *pVec1, float c) {
-	Vector2DScale(pResult, pVec0, c);
-	Vector2DAdd(pResult, pResult, pVec1);
+	Vector2D scale;
+	Vector2DScale(&scale, pVec0, c);
+	Vector2DAdd(pResult, &scale, pVec1);
 }
 
 // ---------------------------------------------------------------------------
 
 void Vector2DScaleSub(Vector2D *pResult, Vector2D *pVec0, Vector2D *pVec1, float c) {
-	Vector2DScale(pResult, pVec0, c);
-	Vector2DSub(pResult, pResult, pVec1);
+	Vector2D scale;
+	Vector2DScale(&scale, pVec0, c);
+	Vector2DSub(pResult, &scale, pVec1);
 }
 
 // ---------------------------------------------------------------------------
