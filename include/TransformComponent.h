@@ -83,13 +83,13 @@ void UpdateTransform(GameObjectInstance* pInst) {
 
 	Matrix2D left, right;
 
-	Vector2D pos = GetPosition(pInst);
-	Matrix2DTranslate(&right, pos.x, pos.y);
-
-	Matrix2DScale(&left, GetScaleX(pInst), GetScaleY(pInst));
+	Matrix2DScale(&right, GetScaleX(pInst), GetScaleY(pInst));
+	
+	Matrix2DRotRad(&left, GetAngel(pInst));
 	Matrix2DConcat(&right, &left, &right);
 
-	Matrix2DRotDeg(&left, GetAngel(pInst));
+	Vector2D pos = GetPosition(pInst);
+	Matrix2DTranslate(&left, pos.x, pos.y);
 	Matrix2DConcat(&left, &left, &right);
 
 	pInst->mpComponent_Transform->mTransform = left;
@@ -98,7 +98,6 @@ void UpdateTransform(GameObjectInstance* pInst) {
 
 void UpdatePosition(GameObjectInstance* pInst, Vector2D vel, float dt) {
 
-	Vector2DScale(&vel, &vel, dt);
 	Vector2D curPos = GetPosition(pInst);
 	Vector2DScaleAdd(&curPos, &vel, &curPos, dt);
 	SetPosition(pInst, curPos);

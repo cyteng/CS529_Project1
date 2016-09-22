@@ -25,7 +25,12 @@
 
 // Feel free to change these values in ordet to make the game more fun
 #define SHIP_INITIAL_NUM			3					// Initial number of ship lives
-#define SHIP_SIZE					100.0f				// Ship size
+#define SHIP_SIZE				    20.0f				// Ship size
+#define SHIP_BULLET_SIZE_X		    6.0f	   
+#define SHIP_BULLET_SIZE_Y		    2.0f	    
+#define SHIP_MISSILE_SIZE_X		    10.0f	   
+#define SHIP_MISSILE_SIZE_Y		    10.0f	    
+
 
 #define HOMING_MISSILE_ROT_SPEED	(PI / 2.0f)			// Homing missile rotation speed (radian/second)
 #define BULLET_SPEED				100.0f				// Bullet speed (m/s)
@@ -146,9 +151,13 @@ void GameStateAsteroidsLoad(void)
 
 	AEGfxMeshStart();
 	AEGfxTriAdd(
-		-0.5f, 0.5f, 0xFFFF0000, 0.0f, 0.0f,
-		-0.5f, -0.5f, 0xFFFF0000, 0.0f, 0.0f,
-		0.5f, 0.0f, 0xFFFFFFFF, 0.0f, 0.0f);
+		-0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f,
+		0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f);
+	AEGfxTriAdd(		
+		0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f,
+		0.5f, -0.5f, 0xFFFFFFFF, 0.0f, 0.0f);
 	pShape->mpMesh = AEGfxMeshEnd();
 
 
@@ -159,7 +168,19 @@ void GameStateAsteroidsLoad(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
+	pShape = sgShapes + sgShapeNum++;
+	pShape->mType = OBJECT_TYPE_ASTEROID;
 
+	AEGfxMeshStart();
+	AEGfxTriAdd(
+		-0.5f, 0.5f, 0xFF8A4B08, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0xFF8A4B08, 0.0f, 0.0f,
+		0.5f, 0.5f, 0xFF8A4B08, 0.0f, 0.0f);
+	AEGfxTriAdd(
+		0.5f, 0.5f, 0xFF8A4B08, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0xFF8A4B08, 0.0f, 0.0f,
+		0.5f, -0.5f, 0xFF8A4B08, 0.0f, 0.0f);
+	pShape->mpMesh = AEGfxMeshEnd();
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,8 +189,26 @@ void GameStateAsteroidsLoad(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
+	pShape = sgShapes + sgShapeNum++;
+	pShape->mType = OBJECT_TYPE_HOMING_MISSILE;
 
+	AEGfxMeshStart();
+	
+	AEGfxTriAdd(
+		-0.5f, 0.5f, 0xFFFE642E, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0xFFFE642E, 0.0f, 0.0f,
+		0.5f, 0.5f, 0xFFFE642E, 0.0f, 0.0f);
+	AEGfxTriAdd(
+		0.5f, 0.5f, 0xFFFE642E, 0.0f, 0.0f,
+		0.5f, -0.5f, 0xFFFE642E, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0xFFFE642E, 0.0f, 0.0f
+		);
+	AEGfxTriAdd(
+		-0.4f, 0.0f, 0xFFFE642E, 0.0f, 0.0f,
+		-0.9f, -0.5f, 0xFFFE642E, 0.0f, 0.0f,
+		-0.9f, 0.5f, 0xFFFE642E, 0.0f, 0.0f);
 
+	pShape->mpMesh = AEGfxMeshEnd();
 }
 
 // ---------------------------------------------------------------------------
@@ -187,8 +226,19 @@ void GameStateAsteroidsInit(void)
 
 	// create the main ship
 	sgpShip = GameObjectInstanceCreate(OBJECT_TYPE_SHIP);
-	SetUniScale(sgpShip, 20.0f);
-	//sgpShip->mpComponent_Transform->
+	SetUniScale(sgpShip, SHIP_SIZE);
+
+	/*GameObjectInstance* pTestBullet = GameObjectInstanceCreate(OBJECT_TYPE_BULLET);
+	SetScaleX(pTestBullet, 10.0f);
+	SetScaleY(pTestBullet, 2.0f);*/
+
+	/*GameObjectInstance* pTestAsteroid = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
+	SetScaleX(pTestAsteroid, 50.0f);
+	SetScaleY(pTestAsteroid, 50.0f);*/
+
+	/*GameObjectInstance* pTestHomingMissle = GameObjectInstanceCreate(OBJECT_TYPE_HOMING_MISSILE);
+	SetScaleX(pTestHomingMissle, 10.0f);
+	SetScaleY(pTestHomingMissle, 10.0f);*/
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,6 +247,24 @@ void GameStateAsteroidsInit(void)
 	//    using the "GameObjInstCreate" function
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
+
+	GameObjectInstance* pTestAsteroid0 = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
+	SetScaleX(pTestAsteroid0, 50.0f);
+	SetScaleY(pTestAsteroid0, 50.0f);
+	SetPositionXY(pTestAsteroid0, 100.f, 200.f);
+	SetVelXY(pTestAsteroid0, 20.f, -20.f);
+
+	GameObjectInstance* pTestAsteroid1 = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
+	SetScaleX(pTestAsteroid1, 30.0f);
+	SetScaleY(pTestAsteroid1, 30.0f);
+	SetPositionXY(pTestAsteroid1, 150.f, 100.f);
+	SetVelXY(pTestAsteroid1, -30.f, 5.f);
+
+	GameObjectInstance* pTestAsteroid2 = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
+	SetScaleX(pTestAsteroid2, 40.0f);
+	SetScaleY(pTestAsteroid2, 40.0f);
+	SetPositionXY(pTestAsteroid2, -100.f, -100.f);
+	SetVelXY(pTestAsteroid2, 10.f, 5.f);
 
 	// reset the score and the number of ship
 	sgScore			= 0;
@@ -241,22 +309,18 @@ void GameStateAsteroidsUpdate(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	if (AEInputCheckCurr(VK_UP)) {		
-		ChangeShipSpeed(sgpShip, frameTime, SHIP_MOVEMENT_TYPE_ACCEL_FORWARD);		
-		/*
-		AESysPrintf("Pos : %f, %f\n", GetPosition(sgpShip).x, GetPosition(sgpShip).y);*/
+		ChangeShipSpeed(sgpShip, frameTime, SHIP_MOVEMENT_TYPE_ACCEL_FORWARD);
 	}
 
 	if (AEInputCheckCurr(VK_DOWN)) {
 		ChangeShipSpeed(sgpShip, frameTime, SHIP_MOVEMENT_TYPE_ACCEL_BACKWARD);
 	}
 
-	if (AEInputCheckCurr(VK_LEFT))
-	{
+	if (AEInputCheckCurr(VK_LEFT)) {
 		ChangeShipVelDir(sgpShip, frameTime, SHIP_MOVEMENT_TYPE_ROT_LEFT);
 	}
 
-	if (AEInputCheckCurr(VK_RIGHT))
-	{
+	if (AEInputCheckCurr(VK_RIGHT)) {
 		ChangeShipVelDir(sgpShip, frameTime, SHIP_MOVEMENT_TYPE_ROT_RIGHT);
 	}
 
@@ -268,7 +332,26 @@ void GameStateAsteroidsUpdate(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	if (AEInputCheckTriggered(VK_SPACE))
 	{
+		GameObjectInstance* pNewBullet = GameObjectInstanceCreate(OBJECT_TYPE_BULLET);
+		SetScaleX(pNewBullet, SHIP_BULLET_SIZE_X);
+		SetScaleY(pNewBullet, SHIP_BULLET_SIZE_Y);
+		
+		Vector2D newPos = GetPosition(sgpShip);	
 
+		float shipAngel = GetAngel(sgpShip);
+		Vector2D shipDir;
+		Vector2DFromAngleRad(&shipDir, shipAngel);
+
+		float shipScaleX = GetScaleX(sgpShip);
+		Vector2DScaleAdd(&newPos, &shipDir, &newPos, shipScaleX * 0.33f);
+
+		SetPosition(pNewBullet, newPos);
+		
+		SetAngel(pNewBullet, shipAngel);
+		
+		Vector2D bulletVel;
+		Vector2DScale(&bulletVel, &shipDir, BULLET_SPEED);
+		SetVel(pNewBullet, bulletVel);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,9 +362,35 @@ void GameStateAsteroidsUpdate(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	if (AEInputCheckTriggered('M'))
 	{
+		GameObjectInstance* pNewHomingMissile = GameObjectInstanceCreate(OBJECT_TYPE_HOMING_MISSILE);
+		SetScaleX(pNewHomingMissile, SHIP_MISSILE_SIZE_X);
+		SetScaleY(pNewHomingMissile, SHIP_MISSILE_SIZE_Y);
 
+		Vector2D newPos = GetPosition(sgpShip);
+
+		float shipAngel = GetAngel(sgpShip);
+		Vector2D shipDir;
+		Vector2DFromAngleRad(&shipDir, shipAngel);
+
+		float shipScaleX = GetScaleX(sgpShip);
+		Vector2DScaleAdd(&newPos, &shipDir, &newPos, shipScaleX * 0.33f);
+
+		SetPosition(pNewHomingMissile, newPos);
+
+		SetAngel(pNewHomingMissile, shipAngel);
+
+		Vector2D missileVel;
+		Vector2DScale(&missileVel, &shipDir, BULLET_SPEED);
+		SetVel(pNewHomingMissile, missileVel);
 	}
 
+	if (AEInputCheckTriggered('1')) {
+		gGameStateNext = GS_RESTART;
+	}
+
+	if (AEInputCheckTriggered('2')) {
+		gGameStateNext = GS_QUIT;
+	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -304,8 +413,6 @@ void GameStateAsteroidsUpdate(void)
 		
 	}
 
-	
-
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	// TO DO 6: Specific game object behavior, according to type
@@ -315,29 +422,101 @@ void GameStateAsteroidsUpdate(void)
 	// -- Homing missile: Follow/Acquire target
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-	for (i = 0; i < GAME_OBJ_INST_NUM_MAX; i++)
-	{
+	for (i = 0; i < GAME_OBJ_INST_NUM_MAX; i++) {
 		GameObjectInstance* pInst = sgGameObjectInstanceList + i;
 
 		// skip non-active object
 		if ((pInst->mFlag & FLAG_ACTIVE) == 0)
 			continue;
 		
+		int objectType = GetGameObjectType(pInst);
+
 		// check if the object is a ship
-		if (pInst->mpComponent_Sprite->mpShape->mType == OBJECT_TYPE_SHIP)
+		if (objectType == OBJECT_TYPE_SHIP)
 		{
 			// warp the ship from one end of the screen to the other
-			pInst->mpComponent_Transform->mPosition.x = AEWrap(pInst->mpComponent_Transform->mPosition.x, winMinX - SHIP_SIZE, winMaxX + SHIP_SIZE);
-			pInst->mpComponent_Transform->mPosition.y = AEWrap(pInst->mpComponent_Transform->mPosition.y, winMinY - SHIP_SIZE, winMaxY + SHIP_SIZE);
+			pInst->mpComponent_Transform->mPosition.x = 
+				AEWrap(pInst->mpComponent_Transform->mPosition.x, 
+					winMinX - SHIP_SIZE * 0.5f, winMaxX + SHIP_SIZE * 0.5f);
+			pInst->mpComponent_Transform->mPosition.y = 
+				AEWrap(pInst->mpComponent_Transform->mPosition.y, 
+					winMinY - SHIP_SIZE * 0.5f, winMaxY + SHIP_SIZE * 0.5f);
 		}
 
 		// Bullet behavior
+		else if (objectType == OBJECT_TYPE_BULLET) {
+			Vector2D origin;
+			Vector2DZero(&origin);
+			Vector2D bulletPos = GetPosition(pInst);
 
+			int inside =
+				StaticPointToStaticRect(
+					&bulletPos, &origin,
+					(winMaxX + SHIP_BULLET_SIZE_X) * 2.f, 
+					(winMaxY + SHIP_BULLET_SIZE_X) * 2.f);
+			
+			if (!inside) {
+				GameObjectInstanceDestroy(pInst);
+			}
+		}
 
 		// Asteroid behavior
-
+		else if (objectType == OBJECT_TYPE_ASTEROID) {
+			pInst->mpComponent_Transform->mPosition.x =
+				AEWrap(pInst->mpComponent_Transform->mPosition.x,
+					winMinX - GetScaleX(pInst) * 0.5f, winMaxX + GetScaleX(pInst) * 0.5f);
+			pInst->mpComponent_Transform->mPosition.y =
+				AEWrap(pInst->mpComponent_Transform->mPosition.y,
+					winMinY - GetScaleY(pInst) * 0.5f, winMaxY + GetScaleY(pInst) * 0.5f);
+		}
 
 		// Homing missile behavior (Not every game object instance will have this component!)
+		else if (objectType == OBJECT_TYPE_HOMING_MISSILE) {
+			GameObjectInstance *target = pInst->mpComponent_Target->mpTarget;
+			
+			if (pInst->mpComponent_Target->mpTarget == NULL || 
+				(target->mFlag & FLAG_ACTIVE) == 0) {
+
+				for (int j = 0; j < GAME_OBJ_INST_NUM_MAX; j++) {				
+					GameObjectInstance* pTargetInst = sgGameObjectInstanceList + j;
+
+					// skip non-active object
+					if ((pTargetInst->mFlag & FLAG_ACTIVE) == 0 ||
+						GetGameObjectType(pTargetInst) != OBJECT_TYPE_ASTEROID)
+						continue;
+
+					pInst->mpComponent_Target->mpTarget = pTargetInst;
+					break;
+				}
+			}
+			else {
+				Vector2D targetPos = GetPosition(target);
+				Vector2D missilePos = GetPosition(pInst);
+				Vector2D missileToTarget;
+				Vector2DSub(&missileToTarget, &targetPos, &missilePos);
+				Vector2D missileDir;
+
+				Vector2DFromAngleRad(&missileDir, GetAngel(pInst) + PI * 0.5f);
+				if (Vector2DDotProduct(&missileToTarget, &missileDir) >= 0.f) {
+					SetAngel(pInst, GetAngel(pInst) + HOMING_MISSILE_ROT_SPEED * frameTime);					
+				}
+				else {
+					SetAngel(pInst, GetAngel(pInst) - HOMING_MISSILE_ROT_SPEED * frameTime);
+				}
+
+				Vector2D newVel;
+				Vector2DFromAngleRad(&newVel, GetAngel(pInst));
+				Vector2DScale(&newVel, &newVel, BULLET_SPEED);
+				SetVel(pInst, newVel);
+			}
+			
+			pInst->mpComponent_Transform->mPosition.x =
+				AEWrap(pInst->mpComponent_Transform->mPosition.x,
+					winMinX - SHIP_BULLET_SIZE_X * 0.5f, winMaxX + SHIP_BULLET_SIZE_X * 0.5f);
+			pInst->mpComponent_Transform->mPosition.y =
+				AEWrap(pInst->mpComponent_Transform->mPosition.y,
+					winMinY - SHIP_BULLET_SIZE_X * 0.5f, winMaxY + SHIP_BULLET_SIZE_X * 0.5f);
+		}
 	}
 
 
@@ -351,33 +530,77 @@ void GameStateAsteroidsUpdate(void)
 	// -- Asteroid - Homing Missile: Rectangle to Rectangle check.
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-	/*
-	for each object instance: oi1
-		if oi1 is not active
-			skip
+	
+	for (i = 0; i < GAME_OBJ_INST_NUM_MAX; i++) {
+		GameObjectInstance* pColliderInst = sgGameObjectInstanceList + i;
 
-		if oi1 is an asteroid
-			for each object instance oi2
-				if(oi2 is not active or oi2 is an asteroid)
-					skip
+		// skip non-active object
+		if ((pColliderInst->mFlag & FLAG_ACTIVE) == 0)
+			continue;
 
-				if(oi2 is the ship)
-					Check for collision between the ship and the asteroid
-					Update game behavior accordingly
-					Update "Object instances array"
-				else
-				if(oi2 is a bullet)
-					Check for collision between the bullet and the asteroid
-					Update game behavior accordingly
-					Update "Object instances array"
-				else
-				if(oi2 is a missle)
-					Check for collision between the missile and the asteroid
-					Update game behavior accordingly
-					Update "Object instances array"
-	*/
+		int colliderObjectType = GetGameObjectType(pColliderInst);
 
+		if (colliderObjectType == OBJECT_TYPE_ASTEROID) {
+			for (int j = 0; j < GAME_OBJ_INST_NUM_MAX; j++) {
+				GameObjectInstance* pTargetInst = sgGameObjectInstanceList + j;
 
+				// skip non-active or ASTEROIDs
+				if ((pTargetInst->mFlag & FLAG_ACTIVE) == 0 ||
+					GetGameObjectType(pTargetInst) == OBJECT_TYPE_ASTEROID)
+					continue;
+
+				int targetObjectType = GetGameObjectType(pTargetInst);
+				Vector2D targetPos = GetPosition(pTargetInst);
+				Vector2D colliderPos = GetPosition(pColliderInst);
+				float colliderWidth = GetScaleX(pColliderInst);
+				float colliderHeight = GetScaleY(pColliderInst);
+
+				int collision;
+
+				//asteriod vs ship
+				if (targetObjectType == OBJECT_TYPE_SHIP) {					 
+					collision = 
+						StaticRectToStaticRect(
+							&colliderPos, colliderWidth, colliderHeight,
+							&targetPos, GetScaleX(pTargetInst), GetScaleY(pTargetInst));
+					
+					//Game Over
+					if (collision) {
+						pTargetInst->mFlag &= ~FLAG_ACTIVE;
+						GameObjectInstanceDestroy(pTargetInst);
+					}
+				}
+				//asteriod vs bullet
+				else if (targetObjectType == OBJECT_TYPE_BULLET) {
+					collision =
+						StaticPointToStaticRect(
+							&targetPos, &colliderPos, colliderWidth, colliderHeight);
+					if (collision) {
+						pColliderInst->mFlag &= ~FLAG_ACTIVE;
+						GameObjectInstanceDestroy(pColliderInst);
+						pTargetInst->mFlag &= ~FLAG_ACTIVE;
+						GameObjectInstanceDestroy(pTargetInst);
+					}
+				}
+				//asteriod vs missile
+				else if (targetObjectType == OBJECT_TYPE_HOMING_MISSILE) {
+					collision =
+						StaticRectToStaticRect(
+							&colliderPos, colliderWidth, colliderHeight,
+							&targetPos, GetScaleX(pTargetInst), GetScaleY(pTargetInst));
+					if (collision) {
+						pColliderInst->mFlag &= ~FLAG_ACTIVE;
+						GameObjectInstanceDestroy(pColliderInst);
+						pTargetInst->mFlag &= ~FLAG_ACTIVE;
+						GameObjectInstanceDestroy(pTargetInst);
+					}
+				}
+
+			}
+		}
+
+	}
+	
 	// =====================================
 	// calculate the matrix for all objects
 	// =====================================
@@ -457,6 +680,16 @@ void GameStateAsteroidsFree(void)
 	//  -- Reset the number of active game objects instances
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	sgGameObjectInstanceNum = 0;
+
+	for (int i = 0; i < GAME_OBJ_INST_NUM_MAX; i++) {
+		GameObjectInstance* pInst = sgGameObjectInstanceList + i;
+
+		pInst->mFlag &= ~FLAG_ACTIVE;
+		GameObjectInstanceDestroy(pInst);
+	}
+
 }
 
 // ---------------------------------------------------------------------------
@@ -468,7 +701,12 @@ void GameStateAsteroidsUnload(void)
 	// TO DO 13:
 	//  -- Destroy all the shapes, using the “AEGfxMeshFree” function.
 	/////////////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////	
+	Shape* pShape;
+	while (sgShapeNum > 0) {
+		pShape = sgShapes + --sgShapeNum;
+		AEGfxMeshFree(pShape->mpMesh);
+	}
 }
 
 // ---------------------------------------------------------------------------

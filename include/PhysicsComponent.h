@@ -38,18 +38,25 @@ void SetVel(GameObjectInstance *pInst, Vector2D velocity) {
 
 }
 
+void SetVelXY(GameObjectInstance *pInst, float velX, float velY) {
+
+	pInst->mpComponent_Physics->mVelocity.x = velX;
+	pInst->mpComponent_Physics->mVelocity.y = velY;
+
+}
+
 void ChangeShipSpeed(GameObjectInstance *pInst, float dt, int movementType) {
 
-	Vector2D acceleration, curVel, velDir;
+	Vector2D acceleration, curVel;
+	float shipAngel = pInst->mpComponent_Transform->mAngle;
 	curVel = GetVel(pInst);
-	Vector2DNormalize(&velDir, &curVel);
-	Vector2DZero(&acceleration);
-	
+	Vector2DFromAngleRad(&acceleration, shipAngel);
+
 	if (movementType == SHIP_MOVEMENT_TYPE_ACCEL_FORWARD) {
-		Vector2DScale(&acceleration, &velDir, SHIP_ACCEL_FORWARD);
+		Vector2DScale(&acceleration, &acceleration, SHIP_ACCEL_FORWARD);
 	}
-	else if(movementType == SHIP_MOVEMENT_TYPE_ACCEL_FORWARD) {
-		Vector2DScale(&acceleration, &velDir, SHIP_ACCEL_BACKWARD);
+	else if(movementType == SHIP_MOVEMENT_TYPE_ACCEL_BACKWARD) {
+		Vector2DScale(&acceleration, &acceleration, SHIP_ACCEL_BACKWARD);
 	}
 	else {
 		//TODO
@@ -63,22 +70,21 @@ void ChangeShipSpeed(GameObjectInstance *pInst, float dt, int movementType) {
 
 void ChangeShipVelDir(GameObjectInstance *pInst, float dt, int movementType) {
 
-	Matrix2D rot;
-	if (movementType == SHIP_MOVEMENT_TYPE_ACCEL_FORWARD) {
-		Matrix2DRotRad(&rot, SHIP_ROT_SPEED * dt);
+	float angel = GetAngel(pInst);
+	
+	if (movementType == SHIP_MOVEMENT_TYPE_ROT_LEFT) {
+		angel += SHIP_ROT_SPEED * dt;
 		
 	}
-	else if (movementType == SHIP_MOVEMENT_TYPE_ACCEL_FORWARD) {
-		Matrix2DRotRad(&rot, -SHIP_ROT_SPEED * dt);
+	else if (movementType == SHIP_MOVEMENT_TYPE_ROT_RIGHT) {
+		angel -= SHIP_ROT_SPEED * dt;
 	}
 	else {
 		//TODO
 		return;
 	}
 
-	Vector2D curVel = GetVel(pInst);
-	Matrix2DMultVec(&curVel, &rot, &curVel);
-	SetVel(pInst, curVel);
+	SetAngel(pInst, angel);
 }
 
 #endif

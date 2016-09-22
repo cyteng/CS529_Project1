@@ -10,4 +10,10 @@ struct Component_Sprite
 	GameObjectInstance *	mpOwner;			// This component's owner
 };
 
+int GetGameObjectType(GameObjectInstance* pInst) {
+
+	return (int)(pInst->mpComponent_Sprite->mpShape->mType);
+
+}
+
 #endif
