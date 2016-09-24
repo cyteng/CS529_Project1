@@ -10,7 +10,7 @@
 
 #include "main.h"
 #include "GameObjectInstance.h"
-#include "Shape.h"
+#include "GameObject.h"
 #include "SpriteComponent.h"
 #include "TransformComponent.h"
 #include "PhysicsComponent.h"
@@ -26,14 +26,13 @@
 // Feel free to change these values in ordet to make the game more fun
 #define SHIP_INITIAL_NUM			3					// Initial number of ship lives
 #define SHIP_SIZE				    20.0f				// Ship size
-#define SHIP_BULLET_SIZE_X		    6.0f	   
-#define SHIP_BULLET_SIZE_Y		    2.0f	    
+
 #define SHIP_MISSILE_SIZE_X		    10.0f	   
 #define SHIP_MISSILE_SIZE_Y		    10.0f	    
 
 
 #define HOMING_MISSILE_ROT_SPEED	(PI / 2.0f)			// Homing missile rotation speed (radian/second)
-#define BULLET_SPEED				100.0f				// Bullet speed (m/s)
+
 
 // ---------------------------------------------------------------------------
 
@@ -226,7 +225,7 @@ void GameStateAsteroidsInit(void)
 
 	// create the main ship
 	sgpShip = GameObjectInstanceCreate(OBJECT_TYPE_SHIP);
-	SetUniScale(sgpShip, SHIP_SIZE);
+	SetUniScale(sgpShip->mpComponent_Transform, SHIP_SIZE);
 
 	/*GameObjectInstance* pTestBullet = GameObjectInstanceCreate(OBJECT_TYPE_BULLET);
 	SetScaleX(pTestBullet, 10.0f);
@@ -249,22 +248,22 @@ void GameStateAsteroidsInit(void)
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
 	GameObjectInstance* pTestAsteroid0 = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
-	SetScaleX(pTestAsteroid0, 50.0f);
-	SetScaleY(pTestAsteroid0, 50.0f);
-	SetPositionXY(pTestAsteroid0, 100.f, 200.f);
-	SetVelXY(pTestAsteroid0, 20.f, -20.f);
+	SetScaleX(pTestAsteroid0->mpComponent_Transform, 50.0f);
+	SetScaleY(pTestAsteroid0->mpComponent_Transform, 50.0f);
+	SetPositionXY(pTestAsteroid0->mpComponent_Transform, 100.f, 200.f);
+	SetVelXY(pTestAsteroid0->mpComponent_Physics, 20.f, -20.f);
 
 	GameObjectInstance* pTestAsteroid1 = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
-	SetScaleX(pTestAsteroid1, 30.0f);
-	SetScaleY(pTestAsteroid1, 30.0f);
-	SetPositionXY(pTestAsteroid1, 150.f, 100.f);
-	SetVelXY(pTestAsteroid1, -30.f, 5.f);
+	SetScaleX(pTestAsteroid1->mpComponent_Transform, 30.0f);
+	SetScaleY(pTestAsteroid1->mpComponent_Transform, 30.0f);
+	SetPositionXY(pTestAsteroid1->mpComponent_Transform, 150.f, 100.f);
+	SetVelXY(pTestAsteroid1->mpComponent_Physics, -30.f, 5.f);
 
 	GameObjectInstance* pTestAsteroid2 = GameObjectInstanceCreate(OBJECT_TYPE_ASTEROID);
-	SetScaleX(pTestAsteroid2, 40.0f);
-	SetScaleY(pTestAsteroid2, 40.0f);
-	SetPositionXY(pTestAsteroid2, -100.f, -100.f);
-	SetVelXY(pTestAsteroid2, 10.f, 5.f);
+	SetScaleX(pTestAsteroid2->mpComponent_Transform, 40.0f);
+	SetScaleY(pTestAsteroid2->mpComponent_Transform, 40.0f);
+	SetPositionXY(pTestAsteroid2->mpComponent_Transform, -100.f, -100.f);
+	SetVelXY(pTestAsteroid2->mpComponent_Physics, 10.f, 5.f);
 
 	// reset the score and the number of ship
 	sgScore			= 0;
@@ -333,25 +332,7 @@ void GameStateAsteroidsUpdate(void)
 	if (AEInputCheckTriggered(VK_SPACE))
 	{
 		GameObjectInstance* pNewBullet = GameObjectInstanceCreate(OBJECT_TYPE_BULLET);
-		SetScaleX(pNewBullet, SHIP_BULLET_SIZE_X);
-		SetScaleY(pNewBullet, SHIP_BULLET_SIZE_Y);
-		
-		Vector2D newPos = GetPosition(sgpShip);	
-
-		float shipAngel = GetAngel(sgpShip);
-		Vector2D shipDir;
-		Vector2DFromAngleRad(&shipDir, shipAngel);
-
-		float shipScaleX = GetScaleX(sgpShip);
-		Vector2DScaleAdd(&newPos, &shipDir, &newPos, shipScaleX * 0.33f);
-
-		SetPosition(pNewBullet, newPos);
-		
-		SetAngel(pNewBullet, shipAngel);
-		
-		Vector2D bulletVel;
-		Vector2DScale(&bulletVel, &shipDir, BULLET_SPEED);
-		SetVel(pNewBullet, bulletVel);
+		InitializeShipBullet(pNewBullet, sgpShip);
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,25 +344,25 @@ void GameStateAsteroidsUpdate(void)
 	if (AEInputCheckTriggered('M'))
 	{
 		GameObjectInstance* pNewHomingMissile = GameObjectInstanceCreate(OBJECT_TYPE_HOMING_MISSILE);
-		SetScaleX(pNewHomingMissile, SHIP_MISSILE_SIZE_X);
-		SetScaleY(pNewHomingMissile, SHIP_MISSILE_SIZE_Y);
+		SetScaleX(pNewHomingMissile->mpComponent_Transform, SHIP_MISSILE_SIZE_X);
+		SetScaleY(pNewHomingMissile->mpComponent_Transform, SHIP_MISSILE_SIZE_Y);
 
-		Vector2D newPos = GetPosition(sgpShip);
+		Vector2D newPos = GetPosition(sgpShip->mpComponent_Transform);
 
-		float shipAngel = GetAngel(sgpShip);
+		float shipAngle = GetAngle(sgpShip->mpComponent_Transform);
 		Vector2D shipDir;
-		Vector2DFromAngleRad(&shipDir, shipAngel);
+		Vector2DFromAngleRad(&shipDir, shipAngle);
 
-		float shipScaleX = GetScaleX(sgpShip);
+		float shipScaleX = GetScaleX(sgpShip->mpComponent_Transform);
 		Vector2DScaleAdd(&newPos, &shipDir, &newPos, shipScaleX * 0.33f);
 
-		SetPosition(pNewHomingMissile, newPos);
+		SetPosition(pNewHomingMissile->mpComponent_Transform, newPos);
 
-		SetAngel(pNewHomingMissile, shipAngel);
+		SetAngle(pNewHomingMissile->mpComponent_Transform, shipAngle);
 
 		Vector2D missileVel;
 		Vector2DScale(&missileVel, &shipDir, BULLET_SPEED);
-		SetVel(pNewHomingMissile, missileVel);
+		SetVel(pNewHomingMissile->mpComponent_Physics, missileVel);
 	}
 
 	if (AEInputCheckTriggered('1')) {
@@ -408,9 +389,7 @@ void GameStateAsteroidsUpdate(void)
 		if ((pInst->mFlag & FLAG_ACTIVE) == 0)
 			continue;
 
-		Vector2D curVel = GetVel(pInst);
-		UpdatePosition(pInst, curVel, frameTime);
-		
+		UpdateGameObjectPosition(pInst, frameTime);		
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,7 +408,7 @@ void GameStateAsteroidsUpdate(void)
 		if ((pInst->mFlag & FLAG_ACTIVE) == 0)
 			continue;
 		
-		int objectType = GetGameObjectType(pInst);
+		unsigned long objectType = GetGameObjectType(pInst->mpComponent_Sprite);
 
 		// check if the object is a ship
 		if (objectType == OBJECT_TYPE_SHIP)
@@ -447,7 +426,7 @@ void GameStateAsteroidsUpdate(void)
 		else if (objectType == OBJECT_TYPE_BULLET) {
 			Vector2D origin;
 			Vector2DZero(&origin);
-			Vector2D bulletPos = GetPosition(pInst);
+			Vector2D bulletPos = GetPosition(pInst->mpComponent_Transform);
 
 			int inside =
 				StaticPointToStaticRect(
@@ -464,17 +443,19 @@ void GameStateAsteroidsUpdate(void)
 		else if (objectType == OBJECT_TYPE_ASTEROID) {
 			pInst->mpComponent_Transform->mPosition.x =
 				AEWrap(pInst->mpComponent_Transform->mPosition.x,
-					winMinX - GetScaleX(pInst) * 0.5f, winMaxX + GetScaleX(pInst) * 0.5f);
+					winMinX - GetScaleX(pInst->mpComponent_Transform) * 0.5f, 
+					winMaxX + GetScaleX(pInst->mpComponent_Transform) * 0.5f);
 			pInst->mpComponent_Transform->mPosition.y =
 				AEWrap(pInst->mpComponent_Transform->mPosition.y,
-					winMinY - GetScaleY(pInst) * 0.5f, winMaxY + GetScaleY(pInst) * 0.5f);
+					winMinY - GetScaleY(pInst->mpComponent_Transform) * 0.5f, 
+					winMaxY + GetScaleY(pInst->mpComponent_Transform) * 0.5f);
 		}
 
 		// Homing missile behavior (Not every game object instance will have this component!)
 		else if (objectType == OBJECT_TYPE_HOMING_MISSILE) {
 			GameObjectInstance *target = pInst->mpComponent_Target->mpTarget;
 			
-			if (pInst->mpComponent_Target->mpTarget == NULL || 
+			if (target == NULL ||
 				(target->mFlag & FLAG_ACTIVE) == 0) {
 
 				for (int j = 0; j < GAME_OBJ_INST_NUM_MAX; j++) {				
@@ -482,7 +463,7 @@ void GameStateAsteroidsUpdate(void)
 
 					// skip non-active object
 					if ((pTargetInst->mFlag & FLAG_ACTIVE) == 0 ||
-						GetGameObjectType(pTargetInst) != OBJECT_TYPE_ASTEROID)
+						GetGameObjectType(pTargetInst->mpComponent_Sprite) != OBJECT_TYPE_ASTEROID)
 						continue;
 
 					pInst->mpComponent_Target->mpTarget = pTargetInst;
@@ -490,24 +471,24 @@ void GameStateAsteroidsUpdate(void)
 				}
 			}
 			else {
-				Vector2D targetPos = GetPosition(target);
-				Vector2D missilePos = GetPosition(pInst);
+				Vector2D targetPos = GetPosition(target->mpComponent_Transform);
+				Vector2D missilePos = GetPosition(pInst->mpComponent_Transform);
 				Vector2D missileToTarget;
 				Vector2DSub(&missileToTarget, &targetPos, &missilePos);
 				Vector2D missileDir;
 
-				Vector2DFromAngleRad(&missileDir, GetAngel(pInst) + PI * 0.5f);
+				Vector2DFromAngleRad(&missileDir, GetAngle(pInst->mpComponent_Transform) + PI * 0.5f);
 				if (Vector2DDotProduct(&missileToTarget, &missileDir) >= 0.f) {
-					SetAngel(pInst, GetAngel(pInst) + HOMING_MISSILE_ROT_SPEED * frameTime);					
+					SetAngle(pInst->mpComponent_Transform, GetAngle(pInst->mpComponent_Transform) + HOMING_MISSILE_ROT_SPEED * frameTime);
 				}
 				else {
-					SetAngel(pInst, GetAngel(pInst) - HOMING_MISSILE_ROT_SPEED * frameTime);
+					SetAngle(pInst->mpComponent_Transform, GetAngle(pInst->mpComponent_Transform) - HOMING_MISSILE_ROT_SPEED * frameTime);
 				}
 
 				Vector2D newVel;
-				Vector2DFromAngleRad(&newVel, GetAngel(pInst));
+				Vector2DFromAngleRad(&newVel, GetAngle(pInst->mpComponent_Transform));
 				Vector2DScale(&newVel, &newVel, BULLET_SPEED);
-				SetVel(pInst, newVel);
+				SetVel(pInst->mpComponent_Physics, newVel);
 			}
 			
 			pInst->mpComponent_Transform->mPosition.x =
@@ -538,7 +519,7 @@ void GameStateAsteroidsUpdate(void)
 		if ((pColliderInst->mFlag & FLAG_ACTIVE) == 0)
 			continue;
 
-		int colliderObjectType = GetGameObjectType(pColliderInst);
+		unsigned long colliderObjectType = GetGameObjectType(pColliderInst->mpComponent_Sprite);
 
 		if (colliderObjectType == OBJECT_TYPE_ASTEROID) {
 			for (int j = 0; j < GAME_OBJ_INST_NUM_MAX; j++) {
@@ -546,14 +527,14 @@ void GameStateAsteroidsUpdate(void)
 
 				// skip non-active or ASTEROIDs
 				if ((pTargetInst->mFlag & FLAG_ACTIVE) == 0 ||
-					GetGameObjectType(pTargetInst) == OBJECT_TYPE_ASTEROID)
+					GetGameObjectType(pTargetInst->mpComponent_Sprite) == OBJECT_TYPE_ASTEROID)
 					continue;
 
-				int targetObjectType = GetGameObjectType(pTargetInst);
-				Vector2D targetPos = GetPosition(pTargetInst);
-				Vector2D colliderPos = GetPosition(pColliderInst);
-				float colliderWidth = GetScaleX(pColliderInst);
-				float colliderHeight = GetScaleY(pColliderInst);
+				int targetObjectType = GetGameObjectType(pTargetInst->mpComponent_Sprite);
+				Vector2D targetPos = GetPosition(pTargetInst->mpComponent_Transform);
+				Vector2D colliderPos = GetPosition(pColliderInst->mpComponent_Transform);
+				float colliderWidth = GetScaleX(pColliderInst->mpComponent_Transform);
+				float colliderHeight = GetScaleY(pColliderInst->mpComponent_Transform);
 
 				int collision;
 
@@ -562,7 +543,9 @@ void GameStateAsteroidsUpdate(void)
 					collision = 
 						StaticRectToStaticRect(
 							&colliderPos, colliderWidth, colliderHeight,
-							&targetPos, GetScaleX(pTargetInst), GetScaleY(pTargetInst));
+							&targetPos, 
+							GetScaleX(pTargetInst->mpComponent_Transform), 
+							GetScaleY(pTargetInst->mpComponent_Transform));
 					
 					//Game Over
 					if (collision) {
@@ -587,7 +570,9 @@ void GameStateAsteroidsUpdate(void)
 					collision =
 						StaticRectToStaticRect(
 							&colliderPos, colliderWidth, colliderHeight,
-							&targetPos, GetScaleX(pTargetInst), GetScaleY(pTargetInst));
+							&targetPos, 
+							GetScaleX(pTargetInst->mpComponent_Transform), 
+							GetScaleY(pTargetInst->mpComponent_Transform));
 					if (collision) {
 						pColliderInst->mFlag &= ~FLAG_ACTIVE;
 						GameObjectInstanceDestroy(pColliderInst);
@@ -628,8 +613,7 @@ void GameStateAsteroidsUpdate(void)
 		// Compute the translation matrix
 		// Concatenate the 3 matrix in the correct order in the object instance's transform component's "mTransform" matrix
 
-		UpdateTransform(pInst);
-
+		UpdateGameObjectTransform(pInst);
 	}
 }
 

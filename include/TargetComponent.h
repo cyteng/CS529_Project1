@@ -1,13 +1,10 @@
 #ifndef TARGET_COMPONENT_H
 #define TARGET_COMPONENT_H
 
-#include "GameObjectInstance.h"
+#include "GameObject.h"
 
-struct Component_Target {
+GameObjectInstance *GetTarget(Component_Target* pComponent);
 
-	GameObjectInstance *		mpTarget;		// Target, used by the homing missile
-	GameObjectInstance *		mpOwner;		// This component's owner
-
-};
+void SetTarget(Component_Target* pComponent, GameObjectInstance * pInst);
 
 #endif

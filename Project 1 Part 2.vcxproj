@@ -38,6 +38,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <LibraryPath>C:\Users\chiyen.teng\Desktop\CS529Project1\DigiPenCS529_Project1;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
@@ -80,11 +81,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObjectInstance.c" />
     <ClCompile Include="src\GameStateMgr.c" />
     <ClCompile Include="src\GameState_Asteroids.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\Math2D.c" />
     <ClCompile Include="src\Matrix2D.c" />
+    <ClCompile Include="src\PhysicsComponent.c" />
+    <ClCompile Include="src\SpriteComponent.c" />
+    <ClCompile Include="src\TargetComponent.c" />
+    <ClCompile Include="src\TransformComponent.c" />
     <ClCompile Include="src\Vector2D.c" />
   </ItemGroup>
   <ItemGroup>
@@ -96,11 +102,11 @@
     <ClInclude Include="include\Math2D.h" />
     <ClInclude Include="include\Matrix2D.h" />
     <ClInclude Include="include\PhysicsComponent.h" />
-    <ClInclude Include="include\Shape.h" />
     <ClInclude Include="include\SpriteComponent.h" />
     <ClInclude Include="include\TargetComponent.h" />
     <ClInclude Include="include\TransformComponent.h" />
     <ClInclude Include="include\Vector2D.h" />
+    <ClInclude Include="src\GameObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
